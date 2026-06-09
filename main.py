@@ -10,13 +10,17 @@ class VideoRequest(BaseModel):
 
 @app.post("/api/extract")
 def extract_video(request: VideoRequest):
-    # Opciones optimizadas para servidores en la nube
+    # Opciones optimizadas con camuflaje para evitar bloqueos
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
         'format': 'best', 
-        'socket_timeout': 10,  # Si el sitio no responde en 10 segundos, rompe la conexión
-        'retries': 1,          # No intentes descargar una y otra vez si ya te bloquearon
+        'socket_timeout': 10,  
+        'retries': 1,          
+        # --- EL ESCUDO ANTI-BOTS ---
+        'extractor_args': {
+            'youtube': ['player_client=android'] # Camuflamos el servidor como un celular Android
+        }
     }
     
     try:
@@ -32,15 +36,14 @@ def extract_video(request: VideoRequest):
                 
             return {
                 "title": title,
-                "best_url_default": video_url,  # El nombre exacto que busca Android
+                "best_url_default": video_url,
                 "duration": info.get('duration', 0)
             }
     except Exception as e:
-        # Cualquier fallo de yt-dlp se captura aquí y devuelve un error 400 controlado
+        # Capturamos el error limpiamente
         raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    # Forzamos el uso del puerto 8080 que configuramos en las variables de Railway
     port = int(os.environ.get("PORT", 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)
