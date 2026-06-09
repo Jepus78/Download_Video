@@ -11,15 +11,16 @@ class VideoRequest(BaseModel):
 @app.post("/api/extract")
 def extract_video(request: VideoRequest):
     # Opciones optimizadas con camuflaje para evitar bloqueos
+   # Opciones optimizadas con camuflaje para evitar bloqueos
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
         'format': 'best', 
         'socket_timeout': 10,  
-        'retries': 1,          
-        # --- EL ESCUDO ANTI-BOTS ---
+        'retries': 1,
+        'cookiefile': 'cookies.txt',  # <-- LA LLAVE MAESTRA DE YOUTUBE
         'extractor_args': {
-            'youtube': ['player_client=android'] # Camuflamos el servidor como un celular Android
+            'youtube': ['player_client=android'] 
         }
     }
     
