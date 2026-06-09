@@ -20,12 +20,9 @@ def extract_video(request: VideoRequest):
             info = ydl.extract_info(request.url, download=False)
             title = info.get('title', 'Video_Vault')
             
-            # 1. Buscamos todas las calidades disponibles
             available_formats = []
             
             for f in info.get('formats', []):
-                # Filtramos: Solo queremos formatos que tengan Video (vcodec) Y Audio (acodec)
-                # para que el celular no descargue videos mudos.
                 if f.get('vcodec') != 'none' and f.get('acodec') != 'none':
                     height = f.get('height')
                     ext = f.get('ext')
@@ -38,17 +35,15 @@ def extract_video(request: VideoRequest):
                             "url": url
                         })
             
-            # Limpiamos duplicados (a veces yt-dlp arroja dos formatos 720p iguales)
             unique_formats = {f['quality']: f for f in available_formats}.values()
 
-            # URL de respaldo (la mejor calidad por defecto por si falla el filtro)
             fallback_url = info.get('url') or info.get('entries', [{}])[0].get('url')
 
             return {
                 "title": title,
                 "duration": info.get('duration', 0),
                 "best_url_default": fallback_url,
-                "formats": list(unique_formats) # <--- Aquí enviamos la lista de calidades
+                "formats": list(unique_formats)
             }
             
     except Exception as e:
