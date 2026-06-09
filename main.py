@@ -12,7 +12,7 @@ class VideoRequest(BaseModel):
 def extract_video(request: VideoRequest):
     # Opciones optimizadas con camuflaje para evitar bloqueos
    # Opciones optimizadas con camuflaje para evitar bloqueos
-    print(f"¡Atención! Recibiendo enlace desde la App: {request.url}")
+    print(f"¡Atención! Recibiendo enlace desde la App: [{request.url}]", flush=True)
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
